@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "sachi"
+version = "0.1.0-dev"
+description = ""
+authors = ["NextFire <git@yuru.moe>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/NextFire/sachi"
+
+[tool.poetry.scripts]
+sachi = "sachi:app"
+
+[tool.poetry.dependencies]
+python = "~3.12"
+typer = {extras = ["all"], version = "^0.9.0"}
+inquirer = "^3.2.2"
+tomlkit = "^0.12.3"
+pydantic = "^2.5.3"
+requests = "^2.31.0"
+yarl = "^1.9.4"
+backoff = "^2.2.1"
+pymediainfo = "^6.1.0"
+regex = "*"
+
+[tool.poetry.group.dev.dependencies]
+pyright = "^1.1.348"
+ruff = "^0.1.14"
+jinja2 = "^3.1.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+target-version = "py312"
+extend-select = ["I"]
