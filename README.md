@@ -13,6 +13,15 @@ poetry install
 poetry run sachi --help
 ```
 
+Or, with Docker:
+
+```sh
+docker run --rm -it \
+  -v /path/to/config:/root/.config/sachi \
+  -v /path/to/media:/media \
+  ghcr.io/nextfire/sachi:main --help
+```
+
 ## Features
 
 Development is still in early stages, here's what's implemented so far:
