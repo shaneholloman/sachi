@@ -62,9 +62,10 @@ class SachiFile(BaseModel):
         return ctx
 
     def analyze_filename(self, ctx: FilebotContext) -> FilebotContext:
-        for k, v in SOURCES_RE.items():
-            if v.search(self.path.name):
-                ctx.source = k
+        for reg in SOURCES_RE.values():
+            search = reg.search(self.path.name)
+            if search is not None:
+                ctx.source = search.group(0)
                 break
         return ctx
 
