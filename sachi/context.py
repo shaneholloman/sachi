@@ -5,7 +5,7 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 
-class FilebotContext(BaseModel):
+class FileBotContext(BaseModel):
     n: str | None = Field(
         default=None,
         description="movie / series name",

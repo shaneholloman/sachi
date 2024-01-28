@@ -48,7 +48,7 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 
-class FilebotContext(BaseModel):
+class FileBotContext(BaseModel):
     {%- for field in fields %}
     {{field.Name}}: {{field.Type}} | None = Field(
         default=None,

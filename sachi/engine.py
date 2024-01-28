@@ -12,7 +12,7 @@ from pymediainfo import MediaInfo
 from rich.table import Table
 
 from sachi.config import BaseConfig, read_config
-from sachi.context import FilebotContext
+from sachi.context import FileBotContext
 from sachi.sources.base import (
     MediaType,
     SachiEpisodeModel,
@@ -53,15 +53,15 @@ class SachiFile(BaseModel):
         new_segment = new_segment.replace(FAKE_SLASH, "/")
         return (base / new_segment).with_suffix(self.path.suffix)
 
-    def get_context(self) -> FilebotContext:
+    def get_context(self) -> FileBotContext:
         # FIXME: cache it somewhere
-        ctx = FilebotContext()
+        ctx = FileBotContext()
         ctx = self.analyze_filename(ctx)
         ctx = self.analyze_media(ctx)
         ctx = self.analyze_match(ctx)
         return ctx
 
-    def analyze_filename(self, ctx: FilebotContext) -> FilebotContext:
+    def analyze_filename(self, ctx: FileBotContext) -> FileBotContext:
         for reg in SOURCES_RE.values():
             search = reg.search(self.path.name)
             if search is not None:
@@ -69,7 +69,7 @@ class SachiFile(BaseModel):
                 break
         return ctx
 
-    def analyze_media(self, ctx: FilebotContext) -> FilebotContext:
+    def analyze_media(self, ctx: FileBotContext) -> FileBotContext:
         media_info = MediaInfo.parse(self.path)
         if isinstance(media_info, str):
             raise RuntimeError(f"Failed to parse media info: {media_info}")
@@ -84,7 +84,7 @@ class SachiFile(BaseModel):
 
         return ctx
 
-    def analyze_match(self, ctx: FilebotContext) -> FilebotContext:
+    def analyze_match(self, ctx: FileBotContext) -> FileBotContext:
         if self.match is not None:
             if isinstance(self.match, SachiSeriesMatch):
                 series, episode = self.match.series, self.match.episode
