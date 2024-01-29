@@ -1,6 +1,6 @@
 # sachi
 
-Sachi is a series and movie TUI (?) renamer. It aims to replace FileBot.
+Sachi is a series and movie TUI renamer made with [Textual](https://github.com/textualize/textual/) which aims to replace FileBot.
 
 ## Getting Started
 
@@ -34,6 +34,4 @@ In progress:
 
 - FileBot context (https://www.filebot.net/naming.html)
 
-A GUI is not planned. You are asked instead to edit multiple TOML files during the renaming process.
-
-The global configuration can be edited with `sachi config` (also a TOML file).
+The global configuration can be edited with `sachi config`.

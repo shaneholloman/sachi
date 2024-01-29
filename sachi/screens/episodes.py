@@ -1,0 +1,135 @@
+from typing import cast
+
+from textual import on, work
+from textual.app import ComposeResult
+from textual.containers import Container
+from textual.reactive import reactive
+from textual.screen import ModalScreen, Screen
+from textual.widgets import (
+    Footer,
+    Header,
+    Input,
+    Label,
+    ListItem,
+    ListView,
+    Select,
+    SelectionList,
+)
+
+from sachi.models import SachiMatch
+from sachi.screens.rename import RenameScreen
+from sachi.sources import SOURCE_CLASSES
+from sachi.sources.base import SachiEpisodeModel, SachiParentModel, SachiSource
+
+
+class ParentSelectionModal(ModalScreen[SachiParentModel]):
+    def __init__(self, parents: list[SachiParentModel], **kwargs):
+        super().__init__(**kwargs)
+        self.parents = parents
+
+    def compose(self) -> ComposeResult:
+        with ListView():
+            for parent in self.parents:
+                yield ListItem(Label(f"{parent.title} ({parent.year})"))
+
+    @on(ListView.Selected)
+    async def select(self, event: ListView.Selected):
+        assert event.list_view.index is not None
+        self.dismiss(self.parents[event.list_view.index])
+
+
+class EpisodesScreen(Screen):
+    SUB_TITLE = "Episodes"
+    CSS_PATH = __file__.replace(".py", ".tcss")
+    BINDINGS = [
+        ("a", "append_selection", "Append"),
+        ("r", "replace_selection", "Replace"),
+    ]
+
+    sachi_source: reactive[SachiSource | None] = reactive(None)
+    sachi_parent: reactive[SachiParentModel | None] = reactive(None)
+    sachi_episodes: reactive[list[SachiEpisodeModel]] = reactive([])
+
+    @property
+    def selected_episodes(self) -> list[SachiEpisodeModel]:
+        sel_list = self.query_one(SelectionList[int])
+        episodes = [self.sachi_episodes[i] for i in sel_list.selected]
+        return episodes
+
+    def compose(self) -> ComposeResult:
+        yield Header()
+        with Container(id="search-header", classes="my-1"):
+            yield Input(placeholder="Search", id="search-input", restrict=r".+")
+            yield Select(
+                ((f"{s.service} ({s.media_type})", s) for s in SOURCE_CLASSES),
+                prompt="Source",
+            )
+        yield SelectionList[int](classes="my-1")
+        yield Footer()
+
+    # Methods
+
+    def deselect_all(self):
+        sel_list = self.query_one(SelectionList[int])
+        sel_list.deselect_all()
+
+    # Event handlers
+
+    @work
+    @on(Input.Submitted, "#search-input")
+    async def search(self, event: Input.Submitted):
+        select = self.query_one(Select[type[SachiSource]])
+        if not isinstance(select.value, type):
+            return
+
+        self.sachi_source = select.value.get_instance()
+        async with self.sachi_source:
+            parents = await self.sachi_source.search(event.value)
+        self.sachi_parent = await self.app.push_screen_wait(
+            ParentSelectionModal(parents)
+        )
+
+        async with self.sachi_source:
+            self.sachi_episodes = await self.sachi_source.get_episodes(
+                self.sachi_parent
+            )
+
+        sel_list = self.query_one(SelectionList[int])
+        sel_list.clear_options()
+        sel_list.add_options(
+            (
+                f"{self.sachi_parent.title} ({self.sachi_parent.year}) "
+                f"- {ep.season:02}x{ep.episode:02} - {ep.name}",
+                i,
+            )
+            for i, ep in enumerate(self.sachi_episodes)
+        )
+
+    # Key bindings
+
+    def action_append_selection(self):
+        if self.sachi_parent is None:
+            return
+        parent = self.sachi_parent
+        screen = cast(RenameScreen, self.app.get_screen("rename"))
+        j = 0
+        for file in screen.files:
+            if j >= len(self.selected_episodes):
+                break
+            if file.match is None:
+                file.match = SachiMatch(
+                    parent=parent, episode=self.selected_episodes[j]
+                )
+                j += 1
+        self.app.switch_screen("rename")
+        self.deselect_all()
+
+    def action_replace_selection(self):
+        if self.sachi_parent is None:
+            return
+        parent = self.sachi_parent
+        screen = cast(RenameScreen, self.app.get_screen("rename"))
+        for file, ep in zip(screen.files, self.selected_episodes):
+            file.match = SachiMatch(parent=parent, episode=ep)
+        self.app.switch_screen("rename")
+        self.deselect_all()

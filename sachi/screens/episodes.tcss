@@ -1,0 +1,27 @@
+ModalScreen {
+    align: center middle;
+}
+
+ListView {
+    width: 75%;
+    height: auto;
+    margin: 2 2;
+}
+
+Label {
+    padding: 1 2;
+}
+
+.my-1 {
+    margin: 1 0;
+}
+
+#search-header {
+    layout: grid;
+    grid-size: 4 1;
+    height: auto;
+}
+
+#search-input {
+    column-span: 3;
+}

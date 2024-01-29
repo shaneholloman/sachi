@@ -41,22 +41,19 @@ for field in fields:
     field["Type"] = TYPE_MAPPING[field["Type"]]
 
 template = jinja2.Template(
-    r"""from datetime import datetime
+    r'''from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from pydantic import BaseModel, Field
 
-
-class FileBotContext(BaseModel):
+@dataclass
+class FileBotContext:
     {%- for field in fields %}
-    {{field.Name}}: {{field.Type}} | None = Field(
-        default=None,
-        description="{{field.Description}}",
-        examples=["{{field.Example}}"],
-    )
-    {%- endfor %}
-"""
+    {{field.Name}}: {{field.Type}} | None = None
+    """{{field.Description}} (`{{field.Example}}`)"""
+    {% endfor %}
+'''
 )
 
 print(template.render(fields=fields))

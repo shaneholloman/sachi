@@ -1,11 +1,6 @@
-from typing import cast
-
+import aiohttp
 import backoff
-import inquirer
-import requests
 import tomlkit
-import typer
-from inquirer.questions import TaggedValue
 from pydantic import BaseModel, TypeAdapter
 from yarl import URL
 
@@ -13,7 +8,7 @@ from sachi.config import read_config, write_config
 from sachi.sources.base import (
     MediaType,
     SachiEpisodeModel,
-    SachiSeriesModel,
+    SachiParentModel,
     SachiSource,
 )
 
@@ -31,28 +26,29 @@ class LoginModel(BaseModel):
     token: str
 
 
-class SearchResultModel(BaseModel):
+class SearchModel(BaseModel):
     tvdb_id: int
     name: str
     translations: dict[str, str]
+    year: int | None = None
 
 
 class EpisodeModel(BaseModel):
+    id: int
     seasonNumber: int
     number: int
-    name: str | None
+    name: str | None = None
 
 
 def giveup(e: Exception):
-    assert isinstance(e, requests.HTTPError)
-    assert e.response is not None
-    return e.response.status_code != 401
+    assert isinstance(e, aiohttp.ClientResponseError)
+    return e.status != 401
 
 
-class TVDBSource(SachiSource, media_types=[MediaType.SERIES], service="TheTVDB"):
+class TVDBSource(SachiSource[int], media_type=MediaType.SERIES, service="TheTVDB"):
     server = URL("https://api4.thetvdb.com/v4")
 
-    def __init__(self) -> None:
+    def __init__(self):
         super().__init__()
         self.config: TVDBConfigModel = self._load_config()
 
@@ -68,97 +64,71 @@ class TVDBSource(SachiSource, media_types=[MediaType.SERIES], service="TheTVDB")
         config_doc["tvdb"] = table
         write_config(config_doc)
 
-    def _login(self):
-        resp = requests.post(
-            str(self.server / "login"),
-            json=dict(apikey=self.config.apiKey),
-        )
-        resp.raise_for_status()
-        model = LoginModel(**resp.json()["data"])
+    async def _login(self):
+        async with self.session.post(self.server / "login") as resp:
+            json = await resp.json()
+        model = LoginModel(**json["data"])
         self.config.token = model.token
         self._save_config()
 
-    def series_search(
-        self, query: str
-    ) -> tuple[SachiSeriesModel, list[SachiEpisodeModel]]:
+    async def search(self, query: str) -> list[SachiParentModel[int]]:
         @backoff.on_exception(
             backoff.expo,
-            requests.HTTPError,
+            aiohttp.ClientResponseError,
             giveup=giveup,
             on_backoff=lambda _: self._login(),
         )
-        def _search():
-            resp = requests.get(
-                str(self.server / "search"),
+        async def _search():
+            async with self.session.get(
+                self.server / "search",
                 params=dict(query=query, type="series"),
                 headers=dict(Authorization=f"Bearer {self.config.token}"),
-            )
-            resp.raise_for_status()
-            return TypeAdapter(list[SearchResultModel]).validate_python(
-                resp.json()["data"]
-            )
+            ) as resp:
+                json = await resp.json()
+            return TypeAdapter(list[SearchModel]).validate_python(json["data"])
 
-        search_res = _search()
-        questions = [
-            inquirer.List(
-                "series",
-                message="Select one result",
-                choices=[
-                    (
-                        f"{sr.translations.get("eng", sr.name)}",
-                        str(sr.tvdb_id),
-                    )
-                    for sr in search_res
-                ],
+        search_res = await _search()
+        return [
+            SachiParentModel(
+                media_type=self.media_type,
+                refId=sr.tvdb_id,
+                title=sr.translations.get("eng", sr.name),
+                year=sr.year,
             )
+            for sr in search_res
         ]
-        answers = inquirer.prompt(questions)
-        if answers is None:
-            raise typer.Abort()
-        series = cast(TaggedValue, answers["series"])
 
-        sachi_series = SachiSeriesModel(title=series.label)
-
+    async def get_episodes(
+        self, parent: SachiParentModel[int]
+    ) -> list[SachiEpisodeModel[int]]:
         @backoff.on_exception(
             backoff.expo,
-            requests.HTTPError,
+            aiohttp.ClientResponseError,
             giveup=giveup,
             on_backoff=lambda _: self._login(),
         )
-        def _episodes():
-            resp = requests.get(
-                str(self.server / "series" / series.tag / "episodes" / "default"),
+        async def _episodes():
+            async with self.session.get(
+                self.server
+                / "series"
+                / str(parent.refId)
+                / "episodes"
+                / "default"
+                / "eng",
                 headers=dict(Authorization=f"Bearer {self.config.token}"),
-            )
-            resp.raise_for_status()
+            ) as resp:
+                json = await resp.json()
             return TypeAdapter(list[EpisodeModel]).validate_python(
-                resp.json()["data"]["episodes"]
+                json["data"]["episodes"]
             )
 
-        episodes = _episodes()
-        sachi_eps = [
-            SachiEpisodeModel(season=ep.seasonNumber, episode=ep.number, name=ep.name)
-            for ep in episodes
+        episodes_res = await _episodes()
+        return [
+            SachiEpisodeModel[int](
+                refId=ep.id,
+                season=ep.seasonNumber,
+                episode=ep.number,
+                name=ep.name,
+            )
+            for ep in episodes_res
         ]
-
-        doc = tomlkit.document()
-        doc.add(tomlkit.comment("Select the episodes you want to keep"))
-
-        array = tomlkit.array()
-        for ep in sachi_eps:
-            ep_table = tomlkit.inline_table()
-            ep_table.update(ep.model_dump(exclude_none=True))
-            array.append(ep_table)
-        array = array.multiline(True)
-        doc.add("episodes", array)
-
-        res = typer.edit(tomlkit.dumps(doc), extension=".toml", require_save=False)
-        if res is None:
-            raise typer.Abort()
-
-        doc = tomlkit.parse(res)
-        sachi_eps = TypeAdapter(list[SachiEpisodeModel]).validate_python(
-            doc["episodes"]
-        )
-
-        return sachi_series, sachi_eps

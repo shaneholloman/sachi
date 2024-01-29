@@ -19,5 +19,5 @@ COPY README.md .
 RUN poetry install --only-root
 
 ENV EDITOR=nvim
-ENTRYPOINT [ "poetry", "run", "python3", "-m", "sachi" ]
+ENTRYPOINT [ "poetry", "run", "sachi" ]
 VOLUME [ "/root/.config/sachi" ]

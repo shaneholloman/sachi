@@ -1,4 +1,4 @@
-from sachi.cli import app
+from sachi.cli import cli_app
 
 if __name__ == "__main__":
-    app()
+    cli_app()

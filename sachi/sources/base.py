@@ -1,8 +1,10 @@
-from abc import ABCMeta, abstractmethod
+from abc import abstractmethod
+from contextlib import AbstractAsyncContextManager
+from dataclasses import dataclass
 from enum import StrEnum
 from typing import Self
 
-from pydantic import BaseModel
+import aiohttp
 
 
 class MediaType(StrEnum):
@@ -10,47 +12,42 @@ class MediaType(StrEnum):
     MOVIE = "movie"
 
 
-class SachiSeriesModel(BaseModel):
+@dataclass
+class SachiParentModel[RefIdType]:
+    media_type: MediaType
+    refId: RefIdType
     title: str
+    year: int | None = None
 
 
-class SachiEpisodeModel(BaseModel):
+@dataclass
+class SachiEpisodeModel[RefIdType]:
+    refId: RefIdType
     season: int
     episode: int
     name: str | None = None
 
 
-class SachiMovieModel(BaseModel):
-    title: str
-    year: int
-
-
-class SachiSourceMeta(type, metaclass=ABCMeta):
-    sources: dict[MediaType, dict[str, type["SachiSource"]]] = {
-        k: {} for k in MediaType
-    }
-
-    def __new__(cls, name, bases, namespace, **kwargs):
-        media_types = kwargs.pop("media_types", None)
-        service = kwargs.pop("service", None)
-        klass = super().__new__(cls, name, bases, namespace, **kwargs)
-        if media_types is not None and service is not None:
-            for media_type in media_types:
-                cls.sources[media_type][service] = klass
-        return klass
-
-
-class SachiSource(metaclass=SachiSourceMeta):
+class SachiSource[RefIdType](AbstractAsyncContextManager):
+    media_type: MediaType
+    service: str
     _instance: Self | None = None
 
+    async def __aenter__(self) -> Self:
+        self.session = aiohttp.ClientSession(raise_for_status=True)
+        return self
+
+    async def __aexit__(self, *args, **kwargs):
+        await self.session.close()
+
     @abstractmethod
-    def series_search(
-        self, query: str
-    ) -> tuple[SachiSeriesModel, list[SachiEpisodeModel]]:
+    async def search(self, query: str) -> list[SachiParentModel[RefIdType]]:
         ...
 
     @abstractmethod
-    def movie_search(self, query: str) -> SachiMovieModel:
+    async def get_episodes(
+        self, parent: SachiParentModel[RefIdType]
+    ) -> list[SachiEpisodeModel[RefIdType]]:
         ...
 
     @classmethod
@@ -58,3 +55,8 @@ class SachiSource(metaclass=SachiSourceMeta):
         if cls._instance is None:
             cls._instance = cls()
         return cls._instance
+
+    def __init_subclass__(cls, /, media_type: MediaType, service: str, **kwargs):
+        super().__init_subclass__(**kwargs)
+        cls.media_type = media_type
+        cls.service = service

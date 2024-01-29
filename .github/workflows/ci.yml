@@ -27,6 +27,6 @@ jobs:
         run: |
           pip install poetry
           poetry install
-      - run: poetry run pyright
+      - run: poetry run pyright sachi/
       - run: poetry run ruff check sachi/
         if: always()

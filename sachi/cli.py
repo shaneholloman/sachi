@@ -6,13 +6,13 @@ import rich
 import typer
 
 import sachi.resources
+from sachi.app import SachiApp
 from sachi.config import get_config_path
-from sachi.engine import MediaType, SachiEngine
 
-app = typer.Typer()
+cli_app = typer.Typer()
 
 
-@app.command()
+@cli_app.command()
 def config():
     config_path = get_config_path()
     if not config_path.exists():
@@ -23,8 +23,8 @@ def config():
     typer.edit(filename=config_path.as_posix())
 
 
-@app.command()
-def series(
+@cli_app.command()
+def rename(
     file_or_dir: Annotated[
         Path,
         typer.Argument(
@@ -36,20 +36,5 @@ def series(
         ),
     ],
 ):
-    SachiEngine(MediaType.SERIES)(file_or_dir)
-
-
-@app.command()
-def movie(
-    file_or_dir: Annotated[
-        Path,
-        typer.Argument(
-            exists=True,
-            file_okay=True,
-            dir_okay=False,
-            writable=True,
-            readable=True,
-        ),
-    ],
-):
-    SachiEngine(MediaType.MOVIE)(file_or_dir)
+    app = SachiApp(file_or_dir)
+    app.run()
