@@ -1,12 +1,11 @@
 import asyncio
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Self, assert_never, cast
+from typing import Callable, Self, assert_never, cast
 
 import jinja2
 from guessit import guessit
 from pymediainfo import MediaInfo
-from textual.widgets.data_table import RowKey
 
 from sachi.config import BaseConfig, read_config
 from sachi.context import FileBotContext
@@ -21,19 +20,24 @@ from sachi.utils import FAKE_SLASH, FS_SPECIAL_CHARS
 @dataclass
 class SachiMatch:
     parent: SachiParentModel
-    episode: SachiEpisodeModel | None
+    episode: SachiEpisodeModel
 
 
 class SachiFile:
-    def __init__(self, path: Path):
+    def __init__(
+        self, path: Path, base_dir: Path, set_rename_cell: Callable[[str | None], None]
+    ):
         self.path = path
+        self.base_dir = base_dir
+        self.set_rename_cell = set_rename_cell
+
         self._match: SachiMatch | None = None
 
         self.ctx = FileBotContext()
         self.analyze_filename()
         self.media_analysis_done = asyncio.Event()
 
-        self.row_key: RowKey | None = None
+        self.new_path = asyncio.Future[Path]()
 
     @property
     def match(self) -> SachiMatch | None:
@@ -42,9 +46,23 @@ class SachiFile:
     @match.setter
     def match(self, value: SachiMatch | None):
         self._match = value
+
+        self.set_rename_cell(
+            f"{value.parent.title} ({value.parent.year}) "
+            f"- {value.episode.season:02}x{value.episode.episode:02} "
+            f"- {value.episode.name}"
+            if value
+            else None
+        )
+
         self.analyze_match()
-        if not self.media_analysis_done.is_set():
+
+        if value is not None and not self.media_analysis_done.is_set():
             asyncio.create_task(asyncio.to_thread(self.analyze_media))
+
+        if self.new_path.done():
+            self.new_path = asyncio.Future[Path]()
+        asyncio.create_task(self.template_new_path())
 
     def analyze_filename(self):
         guess = cast(dict, guessit(self.path.name))
@@ -77,9 +95,9 @@ class SachiFile:
             self.ctx.s00e00 = f"S{episode.season:02}E{episode.episode:02}"
             self.ctx.t = episode.name
 
-    async def new_path(self, base: Path) -> Path | None:
+    async def template_new_path(self):
         if self.match is None:
-            return None
+            return
 
         await self.media_analysis_done.wait()
 
@@ -99,7 +117,9 @@ class SachiFile:
         new_segment = template.render(asdict(self.ctx))
         new_segment = FS_SPECIAL_CHARS.sub("", new_segment)
         new_segment = new_segment.replace(FAKE_SLASH, "/")
-        return (base / new_segment).with_suffix(self.path.suffix)
+        new_path = (self.base_dir / new_segment).with_suffix(self.path.suffix)
+        self.set_rename_cell(str(new_path.relative_to(self.base_dir)))
+        self.new_path.set_result(new_path)
 
     def __eq__(self, other: object):
         return isinstance(other, SachiFile) and self.path == other.path

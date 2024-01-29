@@ -1,3 +1,19 @@
+Horizontal {
+    height: auto;
+
+    Input {
+        width: 3fr;
+    }
+
+    Select {
+        width: 1fr;
+    }
+}
+
+SelectionList {
+    height: 100%;
+}
+
 ModalScreen {
     align: center middle;
 }
@@ -10,18 +26,4 @@ ListView {
 
 Label {
     padding: 1 2;
-}
-
-.my-1 {
-    margin: 1 0;
-}
-
-#search-header {
-    layout: grid;
-    grid-size: 4 1;
-    height: auto;
-}
-
-#search-input {
-    column-span: 3;
 }

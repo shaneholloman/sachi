@@ -2,10 +2,11 @@ from typing import cast
 
 from textual import on, work
 from textual.app import ComposeResult
-from textual.containers import Container
+from textual.containers import Horizontal, Vertical
 from textual.reactive import reactive
 from textual.screen import ModalScreen, Screen
 from textual.widgets import (
+    DataTable,
     Footer,
     Header,
     Input,
@@ -58,13 +59,14 @@ class EpisodesScreen(Screen):
 
     def compose(self) -> ComposeResult:
         yield Header()
-        with Container(id="search-header", classes="my-1"):
-            yield Input(placeholder="Search", id="search-input", restrict=r".+")
-            yield Select(
-                ((f"{s.service} ({s.media_type})", s) for s in SOURCE_CLASSES),
-                prompt="Source",
-            )
-        yield SelectionList[int](classes="my-1")
+        with Vertical():
+            with Horizontal():
+                yield Input(placeholder="Search", id="search-input", restrict=r".+")
+                yield Select(
+                    ((f"{s.service} ({s.media_type})", s) for s in SOURCE_CLASSES),
+                    prompt="Source",
+                )
+            yield SelectionList[int]()
         yield Footer()
 
     # Methods
@@ -112,10 +114,12 @@ class EpisodesScreen(Screen):
             return
         parent = self.sachi_parent
         screen = cast(RenameScreen, self.app.get_screen("rename"))
+        table = screen.query_one(DataTable)
         j = 0
-        for file in screen.files:
+        for row in table.ordered_rows:
             if j >= len(self.selected_episodes):
                 break
+            file = screen.files[row.key]
             if file.match is None:
                 file.match = SachiMatch(
                     parent=parent, episode=self.selected_episodes[j]
@@ -129,7 +133,8 @@ class EpisodesScreen(Screen):
             return
         parent = self.sachi_parent
         screen = cast(RenameScreen, self.app.get_screen("rename"))
-        for file, ep in zip(screen.files, self.selected_episodes):
-            file.match = SachiMatch(parent=parent, episode=ep)
+        table = screen.query_one(DataTable)
+        for row, ep in zip(table.ordered_rows, self.selected_episodes):
+            screen.files[row.key].match = SachiMatch(parent=parent, episode=ep)
         self.app.switch_screen("rename")
         self.deselect_all()
