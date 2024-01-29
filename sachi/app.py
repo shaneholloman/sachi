@@ -2,6 +2,7 @@ from pathlib import Path
 
 from textual.app import App
 
+from sachi.config import BaseConfig, read_config
 from sachi.screens.episodes import EpisodesScreen
 from sachi.screens.rename import RenameScreen
 
@@ -23,6 +24,10 @@ class SachiApp(App):
         self.file_or_dir = file_or_dir
 
     def on_mount(self):
+        config = read_config()
+        config_model = BaseConfig(**config.unwrap())
+        self.dark = config_model.general.dark
+
         rename_screen = RenameScreen(self.file_or_dir)
         self.install_screen(rename_screen, name="rename")
         self.push_screen(rename_screen)

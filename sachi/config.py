@@ -29,8 +29,13 @@ def write_config(doc: tomlkit.TOMLDocument):
 
 
 class BaseConfig(BaseModel):
+    general: "GeneralConfig"
     series: "SeriesConfig"
     movie: "MovieConfig"
+
+
+class GeneralConfig(BaseModel):
+    dark: bool = True
 
 
 class SeriesConfig(BaseModel):

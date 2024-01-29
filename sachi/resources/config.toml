@@ -1,3 +1,6 @@
+[general]
+dark = true
+
 [series]
 template = "TV Shows/{{n}}/Season {{'%02d' % s}}/{{n}} - {{s00e00}} - {{t}}"
 
