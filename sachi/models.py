@@ -1,4 +1,5 @@
 import asyncio
+import re
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Callable, Self, assert_never, cast
@@ -15,7 +16,8 @@ from sachi.sources.base import (
     SachiEpisodeModel,
     SachiParentModel,
 )
-from sachi.utils import FAKE_SLASH, FS_SPECIAL_CHARS
+
+FS_SPECIAL_CHARS = re.compile(r"[/\\:*\"?<>|]")
 
 
 @dataclass
@@ -110,18 +112,20 @@ class SachiFile:
 
         match self.match.parent.media_type:
             case MediaType.SERIES:
-                template_str = config_model.series.template
+                template_list = config_model.series.template
             case MediaType.MOVIE:
-                template_str = config_model.movie.template
+                template_list = config_model.movie.template
             case _:
                 assert_never(self.match.parent.media_type)
 
-        # FIXME: replace FAKE_SLASH with a better solution
-        template = jinja2.Template(template_str.replace("/", FAKE_SLASH))
-        new_segment = template.render(asdict(self.ctx))
-        new_segment = FS_SPECIAL_CHARS.sub("", new_segment)
-        new_segment = new_segment.replace(FAKE_SLASH, "/")
-        new_path = (self.base_dir / new_segment).with_suffix(self.path.suffix)
+        new_path = self.base_dir
+        ctx_dict = asdict(self.ctx)
+        for part in template_list:
+            template = jinja2.Template(part)
+            segment = template.render(ctx_dict)
+            segment = FS_SPECIAL_CHARS.sub("", segment)
+            new_path /= segment
+        new_path = new_path.with_suffix(self.path.suffix)
         self.set_rename_cell(str(new_path.relative_to(self.base_dir)))
         self.new_path.set_result(new_path)
 

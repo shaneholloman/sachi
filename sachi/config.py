@@ -39,8 +39,8 @@ class GeneralConfig(BaseModel):
 
 
 class SeriesConfig(BaseModel):
-    template: str
+    template: list[str]
 
 
 class MovieConfig(BaseModel):
-    template: str
+    template: list[str]

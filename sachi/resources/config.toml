@@ -2,10 +2,15 @@
 dark = true
 
 [series]
-template = "TV Shows/{{n}}/Season {{'%02d' % s}}/{{n}} - {{s00e00}} - {{t}}"
+template = [
+    "TV Shows",
+    "{{n}}",
+    "Season {{'%02d' % s}}",
+    "{{n}} - {{s00e00}} - {{t}}",
+]
 
 [movie]
-template = "Movies/{{n}} ({{y}})/{{n}} ({{y}})"
+template = ["Movies", "{{n}} ({{y}})", "{{n}} ({{y}})"]
 
 [tvdb]
 apiKey = ""
