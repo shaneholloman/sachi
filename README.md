@@ -2,6 +2,8 @@
 
 Sachi is a TV Series and Movie TUI renamer made with [Textual](https://github.com/textualize/textual/).
 
+![demo](https://github.com/NextFire/sachi/assets/20094890/e16de440-1f8f-4d69-b66b-7cef3188b883)
+
 ## Getting Started
 
 **Requirements:** Python 3.12 and [mediainfo](https://mediaarea.net/en/MediaInfo)
