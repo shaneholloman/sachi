@@ -1,6 +1,11 @@
-from sachi.sources.base import SachiSource
+from typing import TYPE_CHECKING
+
 from sachi.sources.tvdb import TVDBSource
 
-SOURCE_CLASSES: list[type[SachiSource]] = [
+if TYPE_CHECKING:
+    from sachi.sources.base import SachiSource
+
+
+SOURCE_CLASSES: list[type["SachiSource"]] = [
     TVDBSource,
 ]

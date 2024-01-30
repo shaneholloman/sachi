@@ -1,5 +1,4 @@
-from abc import abstractmethod
-from contextlib import AbstractAsyncContextManager
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import StrEnum
 from typing import Self
@@ -28,17 +27,18 @@ class SachiEpisodeModel[RefIdType]:
     name: str | None = None
 
 
-class SachiSource[RefIdType](AbstractAsyncContextManager):
+class SachiSource[RefIdType](ABC):
     media_type: MediaType
     service: str
+
+    _session: aiohttp.ClientSession | None = None
     _instance: Self | None = None
 
-    async def __aenter__(self) -> Self:
-        self.session = aiohttp.ClientSession(raise_for_status=True)
-        return self
-
-    async def __aexit__(self, *args, **kwargs):
-        await self.session.close()
+    @property
+    def session(self) -> aiohttp.ClientSession:
+        if self._session is None:
+            self._session = aiohttp.ClientSession(raise_for_status=True)
+        return self._session
 
     @abstractmethod
     async def search(self, query: str) -> list[SachiParentModel[RefIdType]]:

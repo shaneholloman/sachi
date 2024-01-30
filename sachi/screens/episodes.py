@@ -85,16 +85,12 @@ class EpisodesScreen(Screen):
             return
 
         self.sachi_source = select.value.get_instance()
-        async with self.sachi_source:
-            parents = await self.sachi_source.search(event.value)
+        parents = await self.sachi_source.search(event.value)
         self.sachi_parent = await self.app.push_screen_wait(
             ParentSelectionModal(parents)
         )
 
-        async with self.sachi_source:
-            self.sachi_episodes = await self.sachi_source.get_episodes(
-                self.sachi_parent
-            )
+        self.sachi_episodes = await self.sachi_source.get_episodes(self.sachi_parent)
 
         sel_list = self.query_one(SelectionList[int])
         sel_list.clear_options()

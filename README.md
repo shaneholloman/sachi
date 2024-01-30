@@ -1,6 +1,6 @@
 # sachi
 
-Sachi is a series and movie TUI renamer made with [Textual](https://github.com/textualize/textual/) which aims to replace FileBot.
+Sachi is a TV Series and Movie TUI renamer made with [Textual](https://github.com/textualize/textual/).
 
 ## Getting Started
 
