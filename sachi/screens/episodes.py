@@ -43,8 +43,8 @@ class EpisodesScreen(Screen):
     SUB_TITLE = "Episodes"
     CSS_PATH = __file__.replace(".py", ".tcss")
     BINDINGS = [
-        ("a", "append_selection", "Append"),
-        ("r", "replace_selection", "Replace"),
+        ("a", "append_selection", "Append Selection"),
+        ("r", "replace_selection", "Replace Selection"),
     ]
 
     sachi_source: reactive[SachiSource | None] = reactive(None)
