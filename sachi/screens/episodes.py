@@ -66,7 +66,7 @@ class EpisodesScreen(Screen):
                     ((f"{s.service} ({s.media_type})", s) for s in SOURCE_CLASSES),
                     prompt="Source",
                 )
-            yield SelectionList[int]()
+            yield SelectionList[int](id="episodes-list")
         yield Footer()
 
     # Methods
@@ -102,6 +102,10 @@ class EpisodesScreen(Screen):
             )
             for i, ep in enumerate(self.sachi_episodes)
         )
+
+    @on(SelectionList.SelectedChanged, "#episodes-list")
+    def on_episode_selected(self, event: SelectionList.SelectedChanged):
+        event.control.action_cursor_down()
 
     # Key bindings
 

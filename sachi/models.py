@@ -1,11 +1,12 @@
 import asyncio
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Callable, Self, assert_never, cast
+from typing import Any, Callable, Self, assert_never, cast
 
 import jinja2
 from guessit import guessit
 from pymediainfo import MediaInfo
+from rich.text import Text
 
 from sachi.config import BaseConfig, read_config
 from sachi.context import FileBotContext
@@ -25,7 +26,7 @@ class SachiMatch:
 
 class SachiFile:
     def __init__(
-        self, path: Path, base_dir: Path, set_rename_cell: Callable[[str | None], None]
+        self, path: Path, base_dir: Path, set_rename_cell: Callable[[Any], None]
     ):
         self.path = path
         self.base_dir = base_dir
@@ -48,9 +49,12 @@ class SachiFile:
         self._match = value
 
         self.set_rename_cell(
-            f"{value.parent.title} ({value.parent.year}) "
-            f"- {value.episode.season:02}x{value.episode.episode:02} "
-            f"- {value.episode.name}"
+            Text(
+                f"{value.parent.title} ({value.parent.year}) "
+                f"- {value.episode.season:02}x{value.episode.episode:02} "
+                f"- {value.episode.name}",
+                style="italic",
+            )
             if value
             else None
         )
