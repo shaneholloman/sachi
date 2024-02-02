@@ -12,6 +12,6 @@ git tag $NEW_VERSION
 DEV_VERSION=$(poetry version patch --short --dry-run)-dev
 git switch main
 poetry version $DEV_VERSION
-git commit -am $DEV_VERSION
+git commit -am $DEV_VERSION -m '[skip ci]'
 
 git push origin $NEW_VERSION main
