@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sachi"
-version = "0.1.0-dev"
+version = "0.1.0"
 description = "Terminal media files renamer (FileBot alternative)"
 authors = ["NextFire <git@yuru.moe>"]
 license = "MIT"
