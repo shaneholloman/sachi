@@ -30,3 +30,25 @@ jobs:
       - run: poetry run pyright sachi/
       - run: poetry run ruff check sachi/
         if: always()
+
+  release:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: |
+          pip install poetry
+          poetry publish --build
+        env:
+          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.POETRY_PYPI_TOKEN_PYPI }}
+      - run: |
+          gh release create ${{ github.ref_name }} dist/* \
+          --generate-notes \
+          --notes-start-tag $(git tag --sort -v:refname | head -n2 | tail -n1)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

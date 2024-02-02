@@ -8,11 +8,15 @@ Sachi is a TV Series and Movie TUI renamer made with [Textual](https://github.co
 
 **Requirements:** Python 3.12 and [mediainfo](https://mediaarea.net/en/MediaInfo)
 
+<p>
+  <a href="https://pypi.org/project/sachi" alt="Python version compatibility">
+    <img src="https://img.shields.io/pypi/pyversions/sachi" /></a>
+  <a href="https://pypi.org/project/sachi" alt="PyPI version">
+    <img src="https://img.shields.io/pypi/v/sachi" /></a>
+</p>
+
 ```sh
-git clone https://github.com/NextFire/sachi.git
-cd sachi/
-poetry install
-poetry run sachi --help
+pip3 install sachi
 ```
 
 Or, with Docker:
@@ -21,7 +25,7 @@ Or, with Docker:
 docker run --rm -it \
   -v /path/to/config:/root/.config/sachi \
   -v /path/to/media:/media \
-  ghcr.io/nextfire/sachi:main --help
+  ghcr.io/nextfire/sachi:latest --help
 ```
 
 ## Features
