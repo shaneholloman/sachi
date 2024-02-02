@@ -11,7 +11,7 @@ Horizontal {
 }
 
 SelectionList {
-    height: 100%;
+    height: 1fr;
 }
 
 ModalScreen {
