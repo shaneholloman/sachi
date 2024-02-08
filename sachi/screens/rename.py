@@ -16,9 +16,9 @@ class RenameScreen(Screen):
     SUB_TITLE = "Rename"
     CSS_PATH = __file__.replace(".py", ".tcss")
     BINDINGS = [
+        ("x", "remove_element", "Remove"),
         ("j", "move('down')", "Move Down"),
         ("k", "move('up')", "Move Up"),
-        ("d", "remove_element", "Remove"),
         ("p", "apply_renames", "Apply"),
     ]
 
@@ -67,6 +67,19 @@ class RenameScreen(Screen):
 
     # Key bindings
 
+    def action_remove_element(self):
+        table = self.query_one(DataTable)
+        cell_key = table.coordinate_to_cell_key(table.cursor_coordinate)
+        col_i = table.cursor_column
+        match col_i:
+            case 0:
+                table.remove_row(cell_key.row_key)
+                del self.files[cell_key.row_key]
+            case 1:
+                self.files[cell_key.row_key].match = None
+            case _:
+                raise RuntimeError(f"Invalid column: {col_i}")
+
     def action_move(self, direction: Literal["up", "down"]):
         with suppress(CellDoesNotExist):
             table = self.query_one(DataTable)
@@ -112,19 +125,6 @@ class RenameScreen(Screen):
                     table.action_cursor_down()
                 case _:
                     assert_never(direction)
-
-    def action_remove_element(self):
-        table = self.query_one(DataTable)
-        cell_key = table.coordinate_to_cell_key(table.cursor_coordinate)
-        col_i = table.cursor_column
-        match col_i:
-            case 0:
-                table.remove_row(cell_key.row_key)
-                del self.files[cell_key.row_key]
-            case 1:
-                self.files[cell_key.row_key].match = None
-            case _:
-                raise RuntimeError(f"Invalid column: {col_i}")
 
     async def action_apply_renames(self):
         table = self.query_one(DataTable)
