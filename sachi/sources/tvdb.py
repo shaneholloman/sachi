@@ -91,7 +91,7 @@ class TVDBSource(SachiSource[int], media_type=MediaType.SERIES, service="TheTVDB
         return [
             SachiParentModel(
                 media_type=self.media_type,
-                refId=sr.tvdb_id,
+                ref_id=sr.tvdb_id,
                 title=sr.translations.get("eng", sr.name),
                 year=sr.year,
             )
@@ -111,7 +111,7 @@ class TVDBSource(SachiSource[int], media_type=MediaType.SERIES, service="TheTVDB
             async with self.session.get(
                 self.server
                 / "series"
-                / str(parent.refId)
+                / str(parent.ref_id)
                 / "episodes"
                 / "default"
                 / "eng",
@@ -125,7 +125,7 @@ class TVDBSource(SachiSource[int], media_type=MediaType.SERIES, service="TheTVDB
         episodes_res = await _episodes()
         return [
             SachiEpisodeModel[int](
-                refId=ep.id,
+                ref_id=ep.id,
                 season=ep.seasonNumber,
                 episode=ep.number,
                 name=ep.name,

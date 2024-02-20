@@ -86,6 +86,11 @@ class SachiFile:
 
         audio = media_info.audio_tracks[0]
         self.ctx.ac = audio.format
+        # FIXME:
+        if audio.other_channel_positions:
+            self.ctx.channels = ".".join(
+                audio.other_channel_positions[0].split("/")[:2]
+            )
 
         self.media_analysis_done.set()
 
@@ -95,6 +100,7 @@ class SachiFile:
         parent, episode = self.match.parent, self.match.episode
 
         self.ctx.n = parent.title
+        self.ctx.y = parent.year
 
         if episode is not None:
             self.ctx.s = episode.season
@@ -125,7 +131,7 @@ class SachiFile:
             segment = template.render(ctx_dict)
             segment = FS_SPECIAL_CHARS.sub("", segment)
             new_path /= segment
-        new_path = new_path.with_suffix(self.path.suffix)
+        new_path = new_path.with_name(new_path.name + self.path.suffix)
         self.set_rename_cell(str(new_path.relative_to(self.base_dir)))
         self.new_path.set_result(new_path)
 

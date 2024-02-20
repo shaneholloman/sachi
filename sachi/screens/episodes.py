@@ -19,8 +19,12 @@ from textual.widgets import (
 
 from sachi.models import SachiMatch
 from sachi.screens.rename import RenameScreen
-from sachi.sources import SOURCE_CLASSES
-from sachi.sources.base import SachiEpisodeModel, SachiParentModel, SachiSource
+from sachi.sources.base import (
+    SachiEpisodeModel,
+    SachiParentModel,
+    SachiSource,
+    get_all_sources,
+)
 
 
 class ParentSelectionModal(ModalScreen[SachiParentModel]):
@@ -63,7 +67,7 @@ class EpisodesScreen(Screen):
             with Horizontal():
                 yield Input(placeholder="Search", id="search-input", restrict=r".+")
                 yield Select(
-                    ((f"{s.service} ({s.media_type})", s) for s in SOURCE_CLASSES),
+                    ((f"{s.service} ({s.media_type})", s) for s in get_all_sources()),
                     prompt="Source",
                 )
             yield SelectionList[int](id="episodes-list")

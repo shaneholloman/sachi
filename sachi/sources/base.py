@@ -14,14 +14,14 @@ class MediaType(StrEnum):
 @dataclass
 class SachiParentModel[RefIdType]:
     media_type: MediaType
-    refId: RefIdType
+    ref_id: RefIdType
     title: str
     year: int | None = None
 
 
 @dataclass
 class SachiEpisodeModel[RefIdType]:
-    refId: RefIdType
+    ref_id: RefIdType
     season: int
     episode: int
     name: str | None = None
@@ -60,3 +60,13 @@ class SachiSource[RefIdType](ABC):
         super().__init_subclass__(**kwargs)
         cls.media_type = media_type
         cls.service = service
+
+
+def get_all_sources() -> list[type[SachiSource]]:
+    from sachi.sources.custom import CustomMovieSource
+    from sachi.sources.tvdb import TVDBSource
+
+    return [
+        TVDBSource,
+        CustomMovieSource,
+    ]
