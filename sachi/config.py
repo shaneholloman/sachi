@@ -8,6 +8,8 @@ from pydantic import BaseModel
 
 
 def get_config_path() -> Path:
+    if __package__ is None:
+        raise ImportError("This module must be imported as a package")
     pkg_meta = metadata(__package__)
     app_dir = Path(typer.get_app_dir(pkg_meta["Name"]))
     app_dir.mkdir(parents=True, exist_ok=True)
