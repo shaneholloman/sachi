@@ -64,8 +64,9 @@ class TVDBSource(SachiSource[int], media_type=MediaType.SERIES, service="TheTVDB
         config_doc["tvdb"] = table
         write_config(config_doc)
 
-    async def _login(self):
-        async with self.session.post(self.server / "login") as resp:
+    async def _login(self, *args, **kwargs):
+        body = dict(apiKey=self.config.apiKey)
+        async with self.session.post(self.server / "login", json=body) as resp:
             json = await resp.json()
         model = LoginModel(**json["data"])
         self.config.token = model.token
@@ -76,7 +77,7 @@ class TVDBSource(SachiSource[int], media_type=MediaType.SERIES, service="TheTVDB
             backoff.expo,
             aiohttp.ClientResponseError,
             giveup=giveup,
-            on_backoff=lambda _: self._login(),
+            on_backoff=self._login,
         )
         async def _search():
             async with self.session.get(
