@@ -16,7 +16,7 @@ Sachi is a TV Series and Movie TUI renamer made with [Textual](https://github.co
 </p>
 
 ```sh
-pip3 install sachi
+pipx run sachi --help
 ```
 
 Or, with Docker:
@@ -34,6 +34,7 @@ Development is still in early stages, here's what's implemented so far:
 
 - File selection
 - TVDB series search (requires an API key)
+- Movies custom renaming
 - Filename jinja2 templating
 
 In progress:
