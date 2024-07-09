@@ -25,7 +25,7 @@ guessit = "3.8.0"
 setuptools = { version = "70.1.1", markers = "python_version >= '3.12'" } # guessit
 
 [tool.poetry.group.dev.dependencies]
-pyright = "1.1.369"
+pyright = "1.1.370"
 ruff = "0.5.0"
 textual-dev = "1.5.1"
 
