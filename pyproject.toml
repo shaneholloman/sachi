@@ -16,7 +16,7 @@ typer-slim = { version = "0.12.3", extras = ["standard"] }
 textual = "0.75.1"
 tomlkit = "0.13.0"
 pydantic = "2.8.2"
-aiohttp = { version = "3.10.0", extras = ["speedups"] }
+aiohttp = { version = "3.10.1", extras = ["speedups"] }
 yarl = "1.9.4"
 backoff = "2.2.1"
 jinja2 = "3.1.4"
