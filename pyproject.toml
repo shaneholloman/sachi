@@ -14,7 +14,7 @@ sachi = "sachi:cli_app"
 python = "~3.12"
 typer-slim = { version = "0.12.3", extras = ["standard"] }
 textual = "0.76.0"
-tomlkit = "0.13.1"
+tomlkit = "0.13.2"
 pydantic = "2.8.2"
 aiohttp = { version = "3.10.3", extras = ["speedups"] }
 yarl = "1.9.4"
