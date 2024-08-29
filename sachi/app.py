@@ -11,7 +11,7 @@ class SachiApp(App):
     TITLE = "Sachi"
     CSS_PATH = __file__.replace(".py", ".tcss")
     SCREENS = {
-        "episodes": EpisodesScreen(),
+        "episodes": EpisodesScreen,
     }
     BINDINGS = [
         ("1", "switch_screen('rename')", "Rename"),
