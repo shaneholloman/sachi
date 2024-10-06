@@ -6,7 +6,7 @@ Sachi is a TV Series and Movie TUI renamer made with [Textual](https://github.co
 
 ## Getting Started
 
-**Requirements:** Python 3.12 and [mediainfo](https://mediaarea.net/en/MediaInfo)
+**Requirements:** [uv](https://github.com/astral-sh/uv) and [mediainfo](https://mediaarea.net/en/MediaInfo)
 
 <p>
   <a href="https://pypi.org/project/sachi" alt="Python version compatibility">
@@ -16,7 +16,7 @@ Sachi is a TV Series and Movie TUI renamer made with [Textual](https://github.co
 </p>
 
 ```sh
-pipx run sachi --help
+uvx sachi --help
 ```
 
 Or, with Docker:

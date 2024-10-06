@@ -4,7 +4,7 @@
     {
       "label": "Textual Development Console",
       "type": "process",
-      "command": "poetry",
+      "command": "uv",
       "args": ["run", "textual", "console"],
       "isBackground": true,
       "presentation": {
