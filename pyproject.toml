@@ -7,7 +7,7 @@ license = { file = "LICENSE" }
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "typer==0.12.5",
-    "textual==0.82.0",
+    "textual==0.83.0",
     "tomlkit==0.13.2",
     "pydantic==2.9.2",
     "aiohttp[speedups]==3.10.9",
