@@ -26,6 +26,9 @@ dev-dependencies = ["pyright==1.1.384", "ruff==0.6.9", "textual-dev==1.6.1"]
 [project.scripts]
 sachi = "sachi:cli_app"
 
+[project.urls]
+Homepage = "https://github.com/NextFire/sachi"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
