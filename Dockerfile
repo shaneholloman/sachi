@@ -1,4 +1,4 @@
-FROM ghcr.io/astral-sh/uv:python3.12-bookworm
+FROM ghcr.io/astral-sh/uv:python3.13-bookworm
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -20,10 +20,10 @@ RUN --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
 
 COPY sachi sachi
 COPY README.md .
-COPY LICENSE .
 
 RUN --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=.git,target=.git \
     --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev
 
