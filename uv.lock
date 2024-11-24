@@ -718,7 +718,7 @@ wheels = [
 
 [[package]]
 name = "sachi"
-version = "0.1.dev334+ge710983.d20241122"
+version = "0.1.dev336+gd204999.d20241124"
 source = { editable = "." }
 dependencies = [
     { name = "aiohttp", extra = ["speedups"] },
@@ -750,7 +750,7 @@ requires-dist = [
     { name = "pydantic", specifier = "==2.10.1" },
     { name = "pymediainfo", specifier = "==6.1.0" },
     { name = "setuptools", specifier = "==75.6.0" },
-    { name = "textual", specifier = "==0.86.3" },
+    { name = "textual", specifier = "==0.87.0" },
     { name = "tomlkit", specifier = "==0.13.2" },
     { name = "typer", specifier = "==0.13.1" },
     { name = "yarl", specifier = "==1.18.0" },
@@ -792,7 +792,7 @@ wheels = [
 
 [[package]]
 name = "textual"
-version = "0.86.3"
+version = "0.87.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "markdown-it-py", extra = ["linkify", "plugins"] },
@@ -800,9 +800,9 @@ dependencies = [
     { name = "rich" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/4a/a6/c62991e51e3030a7e0bfb196f22c9c57a36257d52b09f6a6b6c78aaa6508/textual-0.86.3.tar.gz", hash = "sha256:3c4d68612243af351e8b2d3dabe44d3cf87624624d7ea657f4d718853206188f", size = 1498694 }
+sdist = { url = "https://files.pythonhosted.org/packages/9b/ff/fa8fbc5559325549a9c56c06c55d023c0f707d823c9be611f916ccfe9a15/textual-0.87.0.tar.gz", hash = "sha256:15638863197dcc08f906523ef60341be754269b29fd656625a716aef7503d45e", size = 1508726 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/df/77/82e0593c98895e7bc18f15323c353d30e74fc0d2096a6d326fc31fddcc88/textual-0.86.3-py3-none-any.whl", hash = "sha256:ffe85bc749de7d71e0e048af301b6027abfca8942263ffb680620261cd1baa6f", size = 647192 },
+    { url = "https://files.pythonhosted.org/packages/50/fd/ff710d5559be63a29a8b348e9a9f855a12f98e975bd507688b5b0027c483/textual-0.87.0-py3-none-any.whl", hash = "sha256:e0f3e51e9568b7639011e4eb07082e8d0179576ea35df1a2181daabc7ba4c108", size = 654641 },
 ]
 
 [[package]]
