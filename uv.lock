@@ -1,9 +1,5 @@
 version = 1
 requires-python = ">=3.12"
-resolution-markers = [
-    "python_full_version < '3.13'",
-    "python_full_version >= '3.13'",
-]
 
 [[package]]
 name = "aiodns"
@@ -718,7 +714,7 @@ wheels = [
 
 [[package]]
 name = "sachi"
-version = "0.1.dev337+gb98d9af.d20241124"
+version = "0.1.dev338+ga132b7c"
 source = { editable = "." }
 dependencies = [
     { name = "aiohttp", extra = ["speedups"] },
