@@ -26,7 +26,7 @@ class SachiApp(App):
     def on_mount(self):
         config = read_config()
         config_model = BaseConfig(**config.unwrap())
-        self.dark = config_model.general.dark
+        self.theme = "textual-dark" if config_model.general.dark else "textual-light"
 
         rename_screen = RenameScreen(self.file_or_dir)
         self.install_screen(rename_screen, name="rename")
