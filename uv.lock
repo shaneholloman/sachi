@@ -730,7 +730,7 @@ wheels = [
 
 [[package]]
 name = "sachi"
-version = "0.4.1.dev2+g9f1067f"
+version = "0.4.1.dev3+g6d7eb8f"
 source = { editable = "." }
 dependencies = [
     { name = "aiohttp", extra = ["speedups"] },
