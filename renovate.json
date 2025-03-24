@@ -4,5 +4,11 @@
     "github>NextFire/renovate-config",
     "github>NextFire/renovate-config:python",
     "github>NextFire/renovate-config:python-app"
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": ["setuptools"],
+      "automerge": true
+    }
   ]
 }
