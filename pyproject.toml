@@ -18,7 +18,7 @@ dependencies = [
     "pymediainfo==7.0.1",
     "guessit==3.8.0",
     # guessit requirement
-    "setuptools==80.0.0",
+    "setuptools==80.0.1",
 ]
 
 [dependency-groups]
