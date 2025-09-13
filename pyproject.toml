@@ -10,7 +10,7 @@ dependencies = [
     "typer==0.17.4",
     "textual==6.1.0",
     "tomlkit==0.13.3",
-    "pydantic==2.11.7",
+    "pydantic==2.11.9",
     "aiohttp[speedups]==3.12.15",
     "yarl==1.20.1",
     "backoff==2.2.1",
