@@ -100,8 +100,10 @@ class EpisodesScreen(Screen):
         sel_list.clear_options()
         sel_list.add_options(
             (
-                f"{self.sachi_parent.title} ({self.sachi_parent.year}) "
-                f"- {ep.season:02}x{ep.episode:02} - {ep.name}",
+                (
+                    f"{self.sachi_parent.title} ({self.sachi_parent.year}) "
+                    f"- {ep.season:02}x{ep.episode:02} - {ep.name}"
+                ),
                 i,
             )
             for i, ep in enumerate(self.sachi_episodes)

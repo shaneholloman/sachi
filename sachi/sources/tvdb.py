@@ -65,7 +65,7 @@ class TVDBSource(SachiSource[int], media_type=MediaType.SERIES, service="TheTVDB
         write_config(config_doc)
 
     async def _login(self, *args, **kwargs):
-        body = dict(apiKey=self.config.apiKey)
+        body = {"apiKey": self.config.apiKey}
         async with self.session.post(self.server / "login", json=body) as resp:
             json = await resp.json()
         model = LoginModel(**json["data"])
@@ -82,8 +82,8 @@ class TVDBSource(SachiSource[int], media_type=MediaType.SERIES, service="TheTVDB
         async def _search():
             async with self.session.get(
                 self.server / "search",
-                params=dict(query=query, type="series"),
-                headers=dict(Authorization=f"Bearer {self.config.token}"),
+                params={"query": query, "type": "series"},
+                headers={"Authorization": f"Bearer {self.config.token}"},
             ) as resp:
                 json = await resp.json()
             return TypeAdapter(list[SearchModel]).validate_python(json["data"])
@@ -116,7 +116,7 @@ class TVDBSource(SachiSource[int], media_type=MediaType.SERIES, service="TheTVDB
                 / "episodes"
                 / "default"
                 / "eng",
-                headers=dict(Authorization=f"Bearer {self.config.token}"),
+                headers={"Authorization": f"Bearer {self.config.token}"},
             ) as resp:
                 json = await resp.json()
             return TypeAdapter(list[EpisodeModel]).validate_python(

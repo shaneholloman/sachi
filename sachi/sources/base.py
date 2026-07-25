@@ -41,14 +41,12 @@ class SachiSource[RefIdType](ABC):
         return self._session
 
     @abstractmethod
-    async def search(self, query: str) -> list[SachiParentModel[RefIdType]]:
-        ...
+    async def search(self, query: str) -> list[SachiParentModel[RefIdType]]: ...
 
     @abstractmethod
     async def get_episodes(
         self, parent: SachiParentModel[RefIdType]
-    ) -> list[SachiEpisodeModel[RefIdType]]:
-        ...
+    ) -> list[SachiEpisodeModel[RefIdType]]: ...
 
     @classmethod
     def get_instance(cls) -> Self:

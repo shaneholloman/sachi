@@ -19,9 +19,9 @@ class SachiApp(App):
         ("q", "quit", "Quit"),
     ]
 
-    def __init__(self, file_or_dir: Path = Path.cwd(), **kwargs):
+    def __init__(self, file_or_dir: Path | None = None, **kwargs):
         super().__init__(**kwargs)
-        self.file_or_dir = file_or_dir
+        self.file_or_dir = file_or_dir or Path.cwd()
 
     def on_mount(self):
         config = read_config()

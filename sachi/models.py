@@ -1,8 +1,9 @@
 import asyncio
 import re
+from collections.abc import Callable
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Callable, Self, assert_never, cast
+from typing import Any, Self, assert_never, cast
 
 import jinja2
 from guessit import guessit
@@ -77,7 +78,7 @@ class SachiFile:
     def analyze_media(self):
         media_info = MediaInfo.parse(self.path)
         if isinstance(media_info, str):
-            raise RuntimeError(f"Failed to parse media info: {media_info}")
+            raise TypeError(f"Failed to parse media info: {media_info}")
 
         video = media_info.video_tracks[0]
         self.ctx.resolution = f"{video.width}x{video.height}"

@@ -1,7 +1,8 @@
+from collections.abc import Generator
 from contextlib import suppress
 from functools import partial
 from pathlib import Path
-from typing import Generator, Literal, assert_never
+from typing import Literal, assert_never
 
 from textual.app import ComposeResult
 from textual.reactive import reactive
